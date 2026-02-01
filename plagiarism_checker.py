@@ -1,39 +1,26 @@
-import nltk
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import string
-
-# Download required NLTK data
-nltk.download('punkt')
-nltk.download('stopwords')
-
-def preprocess_text(text):
-    """Clean and prepare text for comparison"""
-    # Convert to lowercase
-    text = text.lower()
-    
-    # Remove punctuation
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    
-    return text
-
+# SIMPLE version without NLTK
 def check_plagiarism(new_text, existing_texts):
-    """Compare new text with existing texts"""
-    # Prepare all texts
-    all_texts = existing_texts + [new_text]
-    processed_texts = [preprocess_text(t) for t in all_texts]
+    """Simple plagiarism check without NLTK"""
+    if not existing_texts:
+        return 0.0
     
-    # Create TF-IDF vectors
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform(processed_texts)
+    best_score = 0.0
+    new_words = set(new_text.lower().split())
     
-    # Calculate similarity
-    similarity_matrix = cosine_similarity(tfidf_matrix[-1:], tfidf_matrix[:-1])
+    for existing in existing_texts:
+        if not existing:
+            continue
+        
+        existing_words = set(existing.lower().split())
+        
+        if not new_words or not existing_words:
+            continue
+        
+        common = new_words.intersection(existing_words)
+        score = len(common) / max(len(new_words), len(existing_words))
+        score_percent = score * 100
+        
+        if score_percent > best_score:
+            best_score = score_percent
     
-    # Get highest similarity score
-    max_similarity = similarity_matrix.max()
-    
-    # Convert to percentage
-    plagiarism_percent = max_similarity * 100
-    
-    return plagiarism_percent
+    return best_score
