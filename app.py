@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import time
 from datetime import datetime
-import plotly.express as px
 from plagiarism_checker import check_plagiarism
 
 # ========== CONFIGURATION ==========
@@ -310,4 +309,5 @@ def main():
 
 # ========== RUN APP ==========
 if __name__ == "__main__":
+
     main()
